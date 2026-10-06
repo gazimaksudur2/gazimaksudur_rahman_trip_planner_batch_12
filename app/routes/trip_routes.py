@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from app.services import trip_service
-# from app.utils.serializer import trip_to_dict
+from app.utils.serializer import trip_to_dict
 
 
 trip_bp = Blueprint("trips", __name__, url_prefix="/api/v1")
@@ -12,15 +12,7 @@ def create_trip():
         trip = trip_service.create_trip(
             request.get_json()
         )
-        return jsonify({
-            "id": trip.id,
-            "destination": trip.destination,
-            "start_date": str(trip.start_date),
-            "end_date": str(trip.end_date),
-            "budget": trip.budget,
-            "max_travelers": trip.max_travelers,
-            "status": trip.status
-        }), 201
+        return jsonify(trip_to_dict(trip)), 201
     
     except ValueError as error:
 
@@ -34,18 +26,7 @@ def list_trips():
     trips = trip_service.get_all_trips()
 
     return jsonify(
-        [
-            {
-                "id": trip.id,
-                "destination": trip.destination,
-                "start_date": str(trip.start_date),
-                "end_date": str(trip.end_date),
-                "budget": trip.budget,
-                "max_travelers": trip.max_travelers,
-                "status": trip.status
-            }
-            for trip in trips
-        ]
+        [trip_to_dict(trip) for trip in trips]
     ), 200
 
 
@@ -58,15 +39,7 @@ def get_trip(trip_id):
         }), 404
 
     return jsonify(
-        {
-            "id": trip.id,
-            "destination": trip.destination,
-            "start_date": str(trip.start_date),
-            "end_date": str(trip.end_date),
-            "budget": trip.budget,
-            "max_travelers": trip.max_travelers,
-            "status": trip.status
-        }
+        trip_to_dict(trip)
     ), 200
 
 
@@ -84,15 +57,7 @@ def update_trip(trip_id):
             }), 404
 
         return jsonify(
-            {
-                "id": trip.id,
-                "destination": trip.destination,
-                "start_date": str(trip.start_date),
-                "end_date": str(trip.end_date),
-                "budget": trip.budget,
-                "max_travelers": trip.max_travelers,
-                "status": trip.status
-            }
+            trip_to_dict(trip)
         ), 200
     
     except ValueError as error:
