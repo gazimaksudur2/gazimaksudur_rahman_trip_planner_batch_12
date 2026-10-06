@@ -1,5 +1,5 @@
+from app.extensions import db
 from datetime import datetime
-from app import db
 
 
 class Trip(db.Model):
@@ -56,54 +56,4 @@ class Trip(db.Model):
         "Expense",
         backref="trip",
         cascade="all, delete"
-    )
-
-
-class Traveler(db.Model):
-    __tablename__ = "travelers"
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
-
-    trip_id = db.Column(
-        db.Integer,
-        db.ForeignKey("trips.id"),
-        nullable=False
-    )
-
-    name = db.Column(
-        db.String(100),
-        nullable=False
-    )
-
-    email = db.Column(
-        db.String(150),
-        nullable=False
-    )
-
-
-class Expense(db.Model):
-    __tablename__ = "expenses"
-
-    id = db.Column(
-        db.Integer,
-        primary_key=True
-    )
-
-    trip_id = db.Column(
-        db.Integer,
-        db.ForeignKey("trips.id"),
-        nullable=False
-    )
-
-    title = db.Column(
-        db.String(100),
-        nullable=False
-    )
-
-    amount = db.Column(
-        db.Float,
-        nullable=False
     )
