@@ -17,14 +17,6 @@ A REST API for managing group trips using **Python, Flask, and SQLite**.
 ./run.sh
 ```
 
-The script creates the virtual environment, installs dependencies, initializes the database, and starts the API.
-
-Application runs at:
-
-```
-http://127.0.0.1:5000
-```
-
 ### Manual Run
 
 ```bash
@@ -32,27 +24,25 @@ pip install -r requirements.txt
 python3 run.py
 ```
 
+Application:
+
+```
+http://127.0.0.1:5000
+```
+
 ---
 
-## API Endpoints
+# API Endpoints
 
-### Health Check
+## Health Check
 
 ```
 GET /health
 ```
 
-Response:
-
-```json
-{
-    "status": "ok"
-}
-```
-
 ---
 
-## Trip Management
+# Trip Management
 
 ### Create Trip
 
@@ -64,7 +54,7 @@ Example:
 
 ```json
 {
-    "destination": "Coxs Bazar",
+    "destination": "Cox Bazar",
     "start_date": "2026-12-01",
     "end_date": "2026-12-05",
     "budget": 50000,
@@ -98,29 +88,143 @@ DELETE /api/v1/trips/<trip_id>
 
 ---
 
-## Current Validation Rules
+# Traveler Management
+
+Users are automatically created when joining a trip.
+
+### Add Traveler
+
+```
+POST /api/v1/trips/<trip_id>/travelers
+```
+
+Example:
+
+```json
+{
+    "name": "Rahim",
+    "email": "rahim@gmail.com"
+}
+```
+
+Features:
+- Automatic user creation
+- Duplicate trip membership prevention
+- Traveler-trip relationship tracking
+
+### Remove Traveler From Trip
+
+```
+DELETE /api/v1/trips/<trip_id>/travelers/<traveler_id>
+```
+
+(Removes trip membership only, keeps user data.)
+
+---
+
+# Expense Management
+
+### Add Expense
+
+```
+POST /api/v1/trips/<trip_id>/expenses
+```
+
+Example:
+
+```json
+{
+    "title": "Hotel",
+    "amount": 10000
+}
+```
+
+Rules:
+- Expense amount must be positive
+- Total expenses cannot exceed trip budget
+
+---
+
+# Trip Summary
+
+### Get Trip Summary
+
+```
+GET /api/v1/trips/<trip_id>/summary
+```
+
+Returns:
+
+- Traveler count
+- Available seats
+- Total expenses
+- Remaining budget
+- Current trip status
+
+---
+
+# Trip Status Lifecycle
+
+### Update Status
+
+```
+PATCH /api/v1/trips/<trip_id>/status
+```
+
+Allowed transitions:
+
+```
+PLANNED  → ONGOING
+PLANNED  → CANCELLED
+
+ONGOING  → COMPLETED
+ONGOING  → CANCELLED
+```
+
+---
+
+# Validation Rules
 
 - End date must be after start date
 - Budget must be greater than zero
 - Maximum travelers must be greater than zero
-- Invalid trip IDs return 404
+- Duplicate travelers cannot join the same trip
+- Expenses cannot exceed trip budget
+- Invalid status transitions are rejected
 
 ---
 
-## Database
+# Database Design
+
+Main entities:
+
+```
+User
+ |
+Traveler
+ |
+Trip
+ |
+Expense
+```
+
+- Users represent people.
+- Travelers represent trip membership.
+- Expenses belong to trips.
 
 SQLite database is created automatically during application startup.
 
-Database files are ignored by Git.
-
 ---
 
-## Current Progress
+# Current Implementation
 
 Implemented:
 
-- Flask setup
+- Flask application structure
 - SQLite persistence
-- Trip model
-- Trip CRUD API
-- Trip validation
+- Trip CRUD operations
+- User and traveler management
+- Expense tracking
+- Trip summary calculation
+- Trip status lifecycle management
+- Validation and business rules
