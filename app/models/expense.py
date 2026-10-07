@@ -24,3 +24,8 @@ class Expense(db.Model):
         db.Float,
         nullable=False
     )
+
+    trip = db.relationship(
+        "Trip",
+        back_populates="expenses"
+    )

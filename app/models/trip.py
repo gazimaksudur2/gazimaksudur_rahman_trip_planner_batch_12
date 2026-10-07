@@ -54,6 +54,6 @@ class Trip(db.Model):
 
     expenses = db.relationship(
         "Expense",
-        backref="trip",
-        cascade="all, delete"
+        back_populates="trip",
+        cascade="all, delete-orphan"
     )
