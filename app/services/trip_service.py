@@ -46,7 +46,6 @@ def update_trip(trip_id, data):
         trip.budget = data["budget"]
 
     db.session.commit()
-
     return trip
 
 
@@ -58,5 +57,4 @@ def delete_trip(trip_id):
 
     db.session.delete(trip)
     db.session.commit()
-
     return trip

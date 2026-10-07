@@ -48,7 +48,7 @@ class Trip(db.Model):
 
     travelers = db.relationship(
         "Traveler",
-        backref="trip",
+        back_populates="trip",
         cascade="all, delete"
     )
 

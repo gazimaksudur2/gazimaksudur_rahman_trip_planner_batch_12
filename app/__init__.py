@@ -13,7 +13,7 @@ def create_app():
     register_routes(app)
 
     with app.app_context():
-        from app import models  # noqa: F401
+        from app import models
         db.create_all()
 
     return app

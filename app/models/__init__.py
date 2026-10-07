@@ -1,3 +1,4 @@
-from app.models.trip import Trip # noqa: F401
-from app.models.traveler import Traveler # noqa: F401
-from app.models.expense import Expense # noqa: F401
+from app.models.trip import Trip
+from app.models.traveler import Traveler
+from app.models.expense import Expense
+from app.models.user import User
