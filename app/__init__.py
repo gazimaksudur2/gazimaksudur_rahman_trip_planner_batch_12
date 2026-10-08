@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 from app.extensions import db
-from app.exceptions import BusinessException, NotFoundException
+from app.exceptions.business_exception import BusinessException
+from app.exceptions.not_found_exception import NotFoundException
 
 
 def create_app():

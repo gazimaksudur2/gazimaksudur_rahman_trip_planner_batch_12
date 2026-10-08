@@ -18,4 +18,4 @@ def add_expense(trip_id):
             "amount": expense.amount
         }), 201
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400

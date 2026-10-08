@@ -23,7 +23,7 @@ def add_traveler(trip_id):
         }), 201
 
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400
 
 
 @traveler_bp.route("/trips/<int:trip_id>/travelers/<int:traveler_id>",
@@ -36,4 +36,4 @@ def remove_traveler(trip_id, traveler_id):
         }), 200
 
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400

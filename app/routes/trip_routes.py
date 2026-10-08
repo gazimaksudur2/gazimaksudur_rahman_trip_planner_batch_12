@@ -16,7 +16,7 @@ def create_trip():
         return jsonify(trip_to_dict(trip)), 201
 
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400
 
 
 @trip_bp.route("/trips", methods=["GET"])
@@ -59,7 +59,7 @@ def update_trip(trip_id):
         ), 200
 
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400
 
 
 @trip_bp.route("/trips/<int:trip_id>", methods=["DELETE"])

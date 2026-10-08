@@ -12,4 +12,4 @@ def get_trip_summary(trip_id):
         summary = summary_service.get_trip_summary(trip_id)
         return jsonify(summary), 200
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400

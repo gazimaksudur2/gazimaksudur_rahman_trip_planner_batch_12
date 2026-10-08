@@ -2,10 +2,12 @@ from app.exceptions.business_exception import BusinessException
 from app.exceptions.not_found_exception import NotFoundException
 from app.models import Trip, Expense
 from app.extensions import db
+from app.validators.expense_validator import validate_expense_data
 
 
 def add_expense(trip_id, data):
     trip = Trip.query.get(trip_id)
+    amount = validate_expense_data(data)
 
     if not trip:
         raise NotFoundException("Trip Not Found")
@@ -15,11 +17,10 @@ def add_expense(trip_id, data):
 
     current_expenses = sum(float(expense.amount) for expense in trip.expenses)
 
-    if float(current_expenses + data["amount"]) > float(trip.budget):
+    if float(current_expenses + amount) > float(trip.budget):
         raise BusinessException("Total expenses cannot exceed the trip budget")
 
     title = data["title"]
-    amount = data["amount"]
 
     if not title or not amount:
         raise BusinessException("Title and Amount are required")

@@ -16,4 +16,4 @@ def update_status(trip_id):
             "status": trip.status
         }), 200
     except BusinessException as error:
-        return error, 400
+        return jsonify({"error": error.message}), 400

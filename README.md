@@ -85,73 +85,59 @@ PUT /api/v1/trips/<trip_id>
 ```
 DELETE /api/v1/trips/<trip_id>
 ```
-
 ---
 
 # Traveler Management
 
 Users are automatically created when joining a trip.
 
-### Add Traveler
+## Add Traveler
 
-```
 POST /api/v1/trips/<trip_id>/travelers
-```
 
 Example:
 
-```json
 {
-    "name": "Rahim",
-    "email": "rahim@gmail.com"
+    "name":"Rahim",
+    "email":"rahim@gmail.com"
 }
-```
 
 Features:
 - Automatic user creation
-- Duplicate trip membership prevention
-- Traveler-trip relationship tracking
+- Duplicate membership prevention
+- Overlapping trip prevention
 
-### Remove Traveler From Trip
+## Remove Traveler
 
-```
 DELETE /api/v1/trips/<trip_id>/travelers/<traveler_id>
-```
 
-(Removes trip membership only, keeps user data.)
+Removes only trip membership. User data remains.
 
 ---
 
 # Expense Management
 
-### Add Expense
+## Add Expense
 
-```
 POST /api/v1/trips/<trip_id>/expenses
-```
 
 Example:
 
-```json
 {
-    "title": "Hotel",
-    "amount": 10000
+    "title":"Hotel",
+    "amount":10000
 }
-```
 
 Rules:
-- Expense amount must be positive
+- Amount must be positive
 - Total expenses cannot exceed trip budget
+- Expenses allowed only for PLANNED and ONGOING trips
 
 ---
 
 # Trip Summary
 
-### Get Trip Summary
-
-```
 GET /api/v1/trips/<trip_id>/summary
-```
 
 Returns:
 
@@ -159,7 +145,7 @@ Returns:
 - Available seats
 - Total expenses
 - Remaining budget
-- Current trip status
+- Trip status
 
 ---
 
