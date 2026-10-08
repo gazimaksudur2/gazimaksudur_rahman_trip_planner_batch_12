@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from app.exceptions.business_exception import BusinessException
 from app.services import trip_service
 from app.utils.serializer import trip_to_dict
 
@@ -13,12 +14,9 @@ def create_trip():
             request.get_json()
         )
         return jsonify(trip_to_dict(trip)), 201
-    
-    except ValueError as error:
 
-        return jsonify({
-            "error": str(error)
-        }), 400
+    except BusinessException as error:
+        return error, 400
 
 
 @trip_bp.route("/trips", methods=["GET"])
@@ -59,11 +57,9 @@ def update_trip(trip_id):
         return jsonify(
             trip_to_dict(trip)
         ), 200
-    
-    except ValueError as error:
-        return jsonify({
-            "error": str(error)
-        }), 409
+
+    except BusinessException as error:
+        return error, 400
 
 
 @trip_bp.route("/trips/<int:trip_id>", methods=["DELETE"])

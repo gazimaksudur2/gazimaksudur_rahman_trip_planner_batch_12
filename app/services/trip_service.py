@@ -1,3 +1,5 @@
+from app.exceptions.not_found_exception import NotFoundException
+from app.exceptions.business_exception import BusinessException
 from app.extensions import db
 from app.models import Trip
 
@@ -10,8 +12,8 @@ def create_trip(data):
         destination=data["destination"],
         start_date=start_date,
         end_date=end_date,
-        budget=data["budget"],
-        max_travelers=data["max_travelers"],
+        budget=float(data["budget"]),
+        max_travelers=int(data["max_travelers"]),
         status="PLANNED"
     )
 
@@ -26,24 +28,33 @@ def get_all_trips():
 
 
 def get_trip_by_id(trip_id):
-    return Trip.query.get(trip_id)
+    trip = Trip.query.get(trip_id)
+    if not trip:
+        raise NotFoundException("Trip not found")
+    return trip
 
 
 def update_trip(trip_id, data):
     trip = Trip.query.get(trip_id)
     if not trip:
-        return None
-        
+        raise NotFoundException("Trip not found")
+
     if trip.status != "PLANNED":
-        raise ValueError("Only planned trips can be edited")
+        raise BusinessException("Only planned trips can be edited")
 
     if "destination" in data:
+        if not str(data["destination"]).strip():
+            raise BusinessException("Destination cannot be empty")
         trip.destination = data["destination"]
 
     if "budget" in data:
-        if data["budget"] <= 0:
-            raise ValueError("Budget must be greater than zero")
-        trip.budget = data["budget"]
+        try:
+            budget = float(data["budget"])
+        except (ValueError, TypeError):
+            raise BusinessException("Budget must be a valid number")
+        if budget <= 0:
+            raise BusinessException("Budget must be greater than zero")
+        trip.budget = budget
 
     db.session.commit()
     return trip
@@ -53,7 +64,10 @@ def delete_trip(trip_id):
     trip = Trip.query.get(trip_id)
 
     if not trip:
-        return None
+        raise NotFoundException("Trip not found")
+
+    if trip.status != "PLANNED":
+        raise BusinessException("Only planned trips can be deleted")
 
     db.session.delete(trip)
     db.session.commit()

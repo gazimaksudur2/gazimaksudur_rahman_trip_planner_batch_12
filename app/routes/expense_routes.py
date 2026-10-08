@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from app.exceptions.business_exception import BusinessException
 from app.services import expense_service
 
 
@@ -16,5 +17,5 @@ def add_expense(trip_id):
             "title": expense.title,
             "amount": expense.amount
         }), 201
-    except ValueError as error:
-        return jsonify({"error": str(error)}), 400
+    except BusinessException as error:
+        return error, 400

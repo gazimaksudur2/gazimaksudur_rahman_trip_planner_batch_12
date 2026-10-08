@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from app.exceptions.business_exception import BusinessException
 from app.services import traveler_service
 
 traveler_bp = Blueprint("traveler", __name__, url_prefix="/api/v1")
@@ -21,11 +22,8 @@ def add_traveler(trip_id):
             "joined_at": str(traveler.joined_at)
         }), 201
 
-    except ValueError as error:
-
-        return jsonify({
-            "error": str(error)
-        }), 400
+    except BusinessException as error:
+        return error, 400
 
 
 @traveler_bp.route("/trips/<int:trip_id>/travelers/<int:traveler_id>",
@@ -37,7 +35,5 @@ def remove_traveler(trip_id, traveler_id):
             "message": f"Traveler {traveler_id} removed from {trip_id}"
         }), 200
 
-    except ValueError as error:
-        return jsonify({
-            "error": str(error)
-        }), 404
+    except BusinessException as error:
+        return error, 400

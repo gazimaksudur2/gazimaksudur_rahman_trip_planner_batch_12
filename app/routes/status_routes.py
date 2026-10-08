@@ -1,4 +1,5 @@
 from flask import Blueprint, request, jsonify
+from app.exceptions.business_exception import BusinessException
 from app.services import status_service
 
 status_bp = Blueprint("status", __name__, url_prefix="/api/v1")
@@ -14,7 +15,5 @@ def update_status(trip_id):
             "trip_id": trip_id,
             "status": trip.status
         }), 200
-    except ValueError as error:
-        return jsonify({
-            "error": str(error)
-        }), 400
+    except BusinessException as error:
+        return error, 400
