@@ -15,7 +15,10 @@ def validate_trip_data(data):
     for field in required_fields:
         if field not in data:
             raise BusinessException(f"Missing field: {field}")
-        
+        elif field == "destination" and (
+                data[field] is None or not str(data[field]).strip()):
+            raise BusinessException("Destination cannot be empty")
+
     try:
         start_date = datetime.strptime(
             data["start_date"],
