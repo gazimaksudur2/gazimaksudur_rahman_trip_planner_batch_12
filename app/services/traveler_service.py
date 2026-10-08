@@ -1,3 +1,5 @@
+from app.exceptions.business_exception import BusinessException
+from app.exceptions.not_found_exception import NotFoundException
 from app.models import Trip, Traveler, User
 from app.validators import traveler_validator
 from app.extensions import db
@@ -8,20 +10,16 @@ def add_traveler(trip_id, data):
     trip = Trip.query.get(trip_id)
 
     if not trip:
-        raise ValueError("Trip Not Found")
+        raise NotFoundException("Trip Not Found")
 
     if trip.status != "PLANNED":
-        raise ValueError("Travelers can only join planned trips")
+        raise BusinessException("Travelers can only be added to planned trips")
 
     if len(trip.travelers) >= int(trip.max_travelers):
-        raise ValueError("Maximum travelers limit reached")
+        raise BusinessException("Maximum travelers limit reached")
 
     email = data["email"]
     name = data["name"]
-
-    if not name or not email:
-        raise ValueError("Name and Email are required")
-
     user = User.query.filter_by(email=email).first()
 
     if not user:
@@ -35,30 +33,39 @@ def add_traveler(trip_id, data):
     ).first()
 
     if existing:
-        raise ValueError("Traveler already joined to this trip")
+        raise BusinessException("Traveler already joined to this trip")
 
     if has_overlapping_trip(user.id, trip):
-        raise ValueError("Traveler has overlapping trip")
+        raise BusinessException("Traveler has overlapping trip")
 
     traveler = Traveler(user_id=user.id, trip_id=trip.id)
 
-    db.session.add(traveler)
-    db.session.commit()
+    try:
+        db.session.add(traveler)
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise BusinessException("Failed to add traveler")
 
     return traveler
 
 
-def remove_traveler(trip_id, id):
+def remove_traveler(trip_id, traveler_id):
     traveler = Traveler.query.filter_by(
-        id=id,
+        id=traveler_id,
         trip_id=trip_id
     ).first()
 
     if not traveler:
-        raise ValueError("Traveler Not Found")
+        raise NotFoundException("Traveler Not Found")
 
     db.session.delete(traveler)
-    db.session.commit()
+    try:
+        db.session.commit()
+    except Exception:
+        db.session.rollback()
+        raise BusinessException("Failed to remove traveler")
+    return traveler
 
 
 def has_overlapping_trip(user_id, new_trip):
